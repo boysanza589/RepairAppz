@@ -13,6 +13,7 @@ export default function menuhome({ navigation }) {
   const $linq = (arr) => new linq(arr);
   const [modal, setmodal1] = useState(false)
   const [isUser, setUser] = useState(false)
+  const [isAdmin, setAdmin] = useState("users")
 
   useFocusEffect(
     React.useCallback(() => {
@@ -79,17 +80,17 @@ export default function menuhome({ navigation }) {
                 break; // Exit the loop once a match is found
               }
             }
-            
+
             // Now, IsIndex contains the index of the matching object, or -1 if no match was found
             console.log('IsIndexdddddddd:', IsIndex)
-              ListName[IsIndex].ProfilePicture = downloadURL;
-              docRef.update({
-                ListName: ListName
-              }).then(function () {
-                console.log("Array updated successfully");
-              }).catch(function (error) {
-                console.log("Error updating array: ", error);
-              });
+            ListName[IsIndex].ProfilePicture = downloadURL;
+            docRef.update({
+              ListName: ListName
+            }).then(function () {
+              console.log("Array updated successfully");
+            }).catch(function (error) {
+              console.log("Error updating array: ", error);
+            });
 
           } else {
             console.log("No such document!");
@@ -118,8 +119,10 @@ export default function menuhome({ navigation }) {
     console.log("docRef: ", docRef);
     docRef.onSnapshot((doc) => {
       if (doc.exists) {
-        console.log("55555555");
         console.log("ฉันเอง: ", doc.data());
+        if (doc.data().role) {
+          setAdmin(doc.data().role)
+        }
         setUser(doc.data())
       }
     })
@@ -171,14 +174,24 @@ export default function menuhome({ navigation }) {
               marginLeft: "5%",
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 18,
-              }}
-            >
-              {isUser.displayName}
-            </Text>
+            {isAdmin == "users"
+              ? <Text
+                style={{
+                  color: "white",
+                  fontSize: 18,
+                }}
+              >
+                {isUser.displayName}
+              </Text>
+              : <Text
+                style={{
+                  color: "white",
+                  fontSize: 18,
+                }}
+              >
+                Admin
+              </Text>
+            }
             <Text
               style={{
                 color: "white",
@@ -194,12 +207,12 @@ export default function menuhome({ navigation }) {
                 position: "absolute",
               }}
             >
-              <TouchableOpacity 
-              onPress={() => navigation.navigate("profile")}
-              style={{
-                
-              }}>
-              <Image source={require("../assets/image/Avatar.png")} />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("profile")}
+                style={{
+
+                }}>
+                <Image source={require("../assets/image/Avatar.png")} />
               </TouchableOpacity>
             </View>
           </View>
@@ -214,37 +227,71 @@ export default function menuhome({ navigation }) {
         >
           เมนู
         </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("repair")}
-          style={{
-            width: "40%",
-            height: "20%",
-            backgroundColor: "#FFFFFF",
-            borderRadius: 10,
-            marginTop: 20,
-            marginLeft: 35,
-          }}
-        >
-          <View
+        {(isAdmin == "users")
+          ?
+          <TouchableOpacity
+            onPress={() => navigation.navigate("repair")}
             style={{
-              marginTop: "15%",
-              marginLeft: "35%",
+              width: "40%",
+              height: "20%",
+              backgroundColor: "#FFFFFF",
+              borderRadius: 10,
+              marginTop: 20,
+              marginLeft: 35,
             }}
           >
-            <FontAwesome name="wrench" size={60} color="#677185" />
-          </View>
-          <Text
+            <View
+              style={{
+                marginTop: "15%",
+                marginLeft: "35%",
+              }}
+            >
+              <FontAwesome name="wrench" size={60} color="#677185" />
+            </View>
+            <Text
+              style={{
+                fontSize: 15,
+                marginTop: "20%",
+                marginLeft: "35%",
+              }}
+            >
+              แจ้งซ่อม
+            </Text>
+          </TouchableOpacity>
+          : <TouchableOpacity
+            onPress={() => navigation.navigate("Report")}
             style={{
-              fontSize: 15,
-              marginTop: "20%",
-              marginLeft: "35%",
+              width: "40%",
+              height: "20%",
+              backgroundColor: "#FFFFFF",
+              borderRadius: 10,
+              marginTop: 20,
+              marginLeft: 35,
             }}
           >
-            แจ้งซ่อม
-          </Text>
-        </TouchableOpacity>
+            <View
+              style={{
+                marginTop: "15%",
+                marginLeft: "35%",
+              }}
+            >
+              <FontAwesome name="wrench" size={60} color="#677185" />
+            </View>
+            <Text
+              style={{
+                fontSize: 15,
+                marginTop: "20%",
+                // marginLeft: "35%",
+                textAlign: "center"
+              }}
+            >
+              รายงานแจ้งซ่อม
+            </Text>
+          </TouchableOpacity>
+        }
+
         <TouchableOpacity
-        onPress={() => navigation.navigate("trackstatus")}
+          onPress={() => navigation.navigate("trackstatus")}
           style={{
             width: "40%",
             height: "20%",
@@ -272,8 +319,8 @@ export default function menuhome({ navigation }) {
             ติดตามสถานะ
           </Text>
         </TouchableOpacity>
-        
-      </LinearGradient>
-    </View>
+
+      </LinearGradient >
+    </View >
   );
 }
